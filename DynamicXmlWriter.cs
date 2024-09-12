@@ -5,7 +5,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using System.IO;
 using System.Collections.Generic;
-using System.Linq;
+using System.Collections;
 
 public abstract class DynamicXmlWriter
 {
@@ -38,7 +38,7 @@ public abstract class DynamicXmlWriter
                     WriteImageProperty(xmlWriter, property, value, chunkSize);
                     break;
                 case PropertyType.Base64InElement:
-                    WriteBase64InElementProperty(xmlWriter, property, value, chunkSize);
+                    WriteBase64InElementProperty(xmlWriter, value, chunkSize);
                     break;
                 case PropertyType.Array:
                     WriteArrayProperty(xmlWriter, property, value, chunkSize);
@@ -47,7 +47,7 @@ public abstract class DynamicXmlWriter
                     WriteXmlElementProperty(xmlWriter, property, value);
                     break;
                 case PropertyType.Class:
-                    WriteObject(xmlWriter, value, chunkSize);
+                    WriteClassProperty(xmlWriter, property, value, chunkSize);
                     break;
                 case PropertyType.Simple:
                     WriteSimpleProperty(xmlWriter, property, value);
@@ -62,6 +62,9 @@ public abstract class DynamicXmlWriter
 
     private static PropertyType GetPropertyType(PropertyInfo property)
     {
+        if (IsComplexType(property.PropertyType))
+            return PropertyType.Class;
+
         if (property.GetCustomAttribute<Base64InElementAttribute>() != null)
             return PropertyType.Base64InElement;
 
@@ -74,10 +77,20 @@ public abstract class DynamicXmlWriter
         if (property.GetCustomAttribute<XmlElementAttribute>() != null)
             return PropertyType.XmlElement;
 
-        if (property.PropertyType.IsClass && property.PropertyType != typeof(string) && !typeof(IEnumerable<object>).IsAssignableFrom(property.PropertyType))
-            return PropertyType.Class;
-
         return PropertyType.Simple;
+    }
+    
+    private static bool IsComplexType(Type type)
+    {
+        return type.IsClass && type != typeof(string) && !typeof(IEnumerable).IsAssignableFrom(type);
+    }
+
+    private static void WriteClassProperty(XmlWriter xmlWriter, PropertyInfo property, object value, int chunkSize)
+    {
+        var elementName = property.GetCustomAttribute<XmlElementAttribute>()?.ElementName ?? property.Name;
+        xmlWriter.WriteStartElement(elementName);
+        WriteObject(xmlWriter, value, chunkSize);
+        xmlWriter.WriteEndElement();
     }
 
     private static void WriteImageProperty(XmlWriter xmlWriter, PropertyInfo property, object value, int chunkSize)
@@ -88,10 +101,9 @@ public abstract class DynamicXmlWriter
         xmlWriter.WriteStartElement(xmlElementName);
         WriteBase64InChunks(xmlWriter, filePath, chunkSize);
         xmlWriter.WriteEndElement();
-        xmlWriter.Flush();
     }
 
-    private static void WriteBase64InElementProperty(XmlWriter xmlWriter, PropertyInfo property, object value, int chunkSize)
+    private static void WriteBase64InElementProperty(XmlWriter xmlWriter, object value, int chunkSize)
     {
         if (value is not string filePath || !File.Exists(filePath)) return;
 

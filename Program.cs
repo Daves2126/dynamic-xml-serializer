@@ -1,17 +1,34 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using DynamicXmlSerializer;
 
-var category1 = new Category { Id = 1, Name = "Electronics" };
-var category2 = new Category { Id = 2, Name = "Books" };
+var category1 = new Category
+{
+    Id = 1,
+    Name = "Smartphones",
+    SubCategory = new SubCategory
+    {
+        Id = Guid.NewGuid(),
+        Name = "Electronics"
+    }
+};
+var category2 = new Category
+{
+    Id = 2,
+    Name = "Books",
+    SubCategory = new SubCategory
+    {
+        Id = Guid.NewGuid(),
+        Name = "Literature"
+    }
+};
 
-// Crear productos
 var product1 = new Product
 {
     Id = 1,
     Name = "Smartphone",
     Price = 299.99m,
     Category = category1,
-    ImagePath = "/home/estebangt/Documents/github/dynamic-xml-serializer/apache.png"
+    ImagePath = "J:\\\\Documents\\\\GitHub\\\\dynamic-xml-serializer\\\\apache.png"
 };
 
 var product2 = new Product
@@ -20,7 +37,7 @@ var product2 = new Product
     Name = "Novel",
     Price = 19.99m,
     Category = category2,
-    ImagePath = "/home/estebangt/Documents/github/dynamic-xml-serializer/apache.png"
+    ImagePath = "J:\\\\Documents\\\\GitHub\\\\dynamic-xml-serializer\\\\apache.png"
 };
 
 // Crear orden
@@ -32,6 +49,6 @@ var order = new Order
 };
 
 
-DynamicXmlWriter.WriteObjectToXml(order, $"/home/estebangt/Documents/github/dynamic-xml-serializer/{Guid.NewGuid()}-output.xml");
+DynamicXmlWriter.WriteObjectToXml(order, $"J:\\Documents\\GitHub\\dynamic-xml-serializer\\{Guid.NewGuid()}-output.xml");
 
 Console.WriteLine("Hello, World!");

@@ -10,6 +10,18 @@ public class Category
 
     [XmlElement("Name")]
     public string Name { get; set; }
+    
+    [XmlElement("SubCategory")]
+    public SubCategory SubCategory { get; set; }
+}
+
+public class SubCategory
+{
+    [XmlElement("Id")]
+    public Guid Id { get; set; }
+
+    [XmlElement("Name")]
+    public string Name { get; set; }
 }
 
 public class Product
