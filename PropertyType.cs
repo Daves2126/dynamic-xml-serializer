@@ -6,5 +6,6 @@ public enum PropertyType
     Array,
     XmlElement,
     Class,
-    Simple
+    Simple,
+    Base64InElement
 }
