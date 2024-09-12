@@ -15,7 +15,7 @@ public abstract class DynamicXmlWriter
         xmlWriter.WriteStartDocument();
         WriteObject(xmlWriter, obj, chunkSize);
         xmlWriter.WriteEndDocument();
-        xmlWriter.Flush();  // Flush al final para asegurar que todos los datos se escriben
+        xmlWriter.Flush();
     }
 
     private static void WriteObject(XmlWriter xmlWriter, object? obj, int chunkSize)
@@ -23,16 +23,7 @@ public abstract class DynamicXmlWriter
         if (obj == null) return;
 
         var type = obj.GetType();
-        var xmlElementName = type.Name;
-
-        // Use XmlRootAttribute if available
-        var rootAttr = type.GetCustomAttribute<XmlRootAttribute>();
-        if (rootAttr != null)
-        {
-            xmlElementName = rootAttr.ElementName ?? xmlElementName;
-        }
-
-        xmlWriter.WriteStartElement(xmlElementName);
+        xmlWriter.WriteStartElement(type.Name);
 
         foreach (var property in type.GetProperties())
         {
@@ -56,7 +47,7 @@ public abstract class DynamicXmlWriter
                     WriteXmlElementProperty(xmlWriter, property, value);
                     break;
                 case PropertyType.Class:
-                    WriteObject(xmlWriter, value, chunkSize); // Llamar recursivamente para propiedades de tipo clase
+                    WriteObject(xmlWriter, value, chunkSize);
                     break;
                 case PropertyType.Simple:
                     WriteSimpleProperty(xmlWriter, property, value);
@@ -97,43 +88,39 @@ public abstract class DynamicXmlWriter
         xmlWriter.WriteStartElement(xmlElementName);
         WriteBase64InChunks(xmlWriter, filePath, chunkSize);
         xmlWriter.WriteEndElement();
-        xmlWriter.Flush();  // Flush después de escribir el elemento
+        xmlWriter.Flush();
     }
 
     private static void WriteBase64InElementProperty(XmlWriter xmlWriter, PropertyInfo property, object value, int chunkSize)
     {
         if (value is not string filePath || !File.Exists(filePath)) return;
 
-        var xmlElementName = property.GetCustomAttribute<XmlElementAttribute>()?.ElementName ?? property.Name;
-        xmlWriter.WriteStartElement(xmlElementName);
         WriteBase64InChunks(xmlWriter, filePath, chunkSize);
-        xmlWriter.WriteEndElement();
     }
 
     private static void WriteArrayProperty(XmlWriter xmlWriter, PropertyInfo property, object value, int chunkSize)
     {
         var list = (IEnumerable<object?>)value;
-        var arrayElementName = property.GetCustomAttribute<XmlElementAttribute>()?.ElementName ?? property.Name;
-        xmlWriter.WriteStartElement(arrayElementName);
+        xmlWriter.WriteStartElement(property.Name);
         foreach (var item in list)
         {
             WriteObject(xmlWriter, item, chunkSize);
         }
         xmlWriter.WriteEndElement();
-        xmlWriter.Flush();  // Flush después de escribir la lista completa
+        xmlWriter.Flush();
     }
 
     private static void WriteXmlElementProperty(XmlWriter xmlWriter, PropertyInfo property, object value)
     {
         var elementName = property.GetCustomAttribute<XmlElementAttribute>()?.ElementName ?? property.Name;
         xmlWriter.WriteElementString(elementName, value.ToString());
-        xmlWriter.Flush();  // Flush después de escribir el elemento
+        xmlWriter.Flush();
     }
 
     private static void WriteSimpleProperty(XmlWriter xmlWriter, PropertyInfo property, object value)
     {
         xmlWriter.WriteElementString(property.Name, value.ToString());
-        xmlWriter.Flush();  // Flush después de escribir el elemento
+        xmlWriter.Flush();
     }
 
     private static void WriteBase64InChunks(XmlWriter xmlWriter, string filePath, int chunkSize)
@@ -145,7 +132,7 @@ public abstract class DynamicXmlWriter
         {
             var base64Chunk = Convert.ToBase64String(buffer, 0, bytesRead);
             xmlWriter.WriteString(base64Chunk);
-            xmlWriter.Flush();  // Flush después de escribir cada chunk
+            xmlWriter.Flush();
         }
     }
 }
