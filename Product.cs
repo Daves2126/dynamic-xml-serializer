@@ -3,39 +3,42 @@ namespace DynamicXmlSerializer;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
+[XmlRoot("category")]
 public class Category
 {
-    [XmlElement("Id")]
+    [XmlElement("id")]
     public int Id { get; set; }
 
-    [XmlElement("Name")]
+    [XmlElement("name")]
     public string Name { get; set; }
     
-    [XmlElement("SubCategory")]
+    [XmlElement("subCategory")]
     public SubCategory SubCategory { get; set; }
 }
 
+[XmlRoot("subcategory")]
 public class SubCategory
 {
-    [XmlElement("Id")]
+    [XmlElement("id")]
     public Guid Id { get; set; }
 
-    [XmlElement("Name")]
+    [XmlElement("name")]
     public string Name { get; set; }
 }
 
+[XmlRoot("product")]
 public class Product
 {
-    [XmlElement("Id")]
+    [XmlElement("id")]
     public int Id { get; set; }
 
-    [XmlElement("Name")]
+    [XmlElement("name")]
     public string Name { get; set; }
 
-    [XmlElement("Price")]
+    [XmlElement("price")]
     public decimal Price { get; set; }
 
-    [XmlElement("Category")]
+    [XmlElement("category")]
     public Category Category { get; set; }
 
     [ImageToBase64]
@@ -43,16 +46,25 @@ public class Product
     public string ImagePath { get; set; }
 }
 
-[XmlRoot("Order")]
+[XmlRoot("order")]
 public class Order
 {
-    [XmlElement("Id")]
+    [XmlElement("id")]
     public int Id { get; set; }
 
-    [XmlElement("OrderDate")]
+    [XmlElement("orderDate")]
     public DateTime OrderDate { get; set; }
 
-    [XmlArray("Products")]
-    [XmlArrayItem("Product")]
+    [XmlArray] 
     public List<Product> Products { get; set; } = new List<Product>();
+    
+    [XmlElement("test")]
+    public Test Test { get; set; }
+}
+
+[XmlRoot("test")]
+public class Test
+{
+    public string? TestString { get; set; }
+    public string? AnotherTestString { get; set; }
 }

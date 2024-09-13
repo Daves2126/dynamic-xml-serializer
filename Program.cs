@@ -28,7 +28,7 @@ var product1 = new Product
     Name = "Smartphone",
     Price = 299.99m,
     Category = category1,
-    ImagePath = "J:\\\\Documents\\\\GitHub\\\\dynamic-xml-serializer\\\\apache.png"
+    ImagePath = "/home/estebangt/Documents/github/dynamic-xml-serializer/apache.png"
 };
 
 var product2 = new Product
@@ -37,7 +37,7 @@ var product2 = new Product
     Name = "Novel",
     Price = 19.99m,
     Category = category2,
-    ImagePath = "J:\\\\Documents\\\\GitHub\\\\dynamic-xml-serializer\\\\apache.png"
+    ImagePath = "/home/estebangt/Documents/github/dynamic-xml-serializer/apache.png",
 };
 
 // Crear orden
@@ -45,10 +45,11 @@ var order = new Order
 {
     Id = 1,
     OrderDate = DateTime.Now,
-    Products = new List<Product> { product1, product2 }
+    Products = new List<Product> { product1, product2 },
+    Test = new()
 };
 
 
-DynamicXmlWriter.WriteObjectToXml(order, $"J:\\Documents\\GitHub\\dynamic-xml-serializer\\{Guid.NewGuid()}-output.xml");
+DynamicXmlWriter.WriteObjectToXml(order, $"/home/estebangt/Documents/github/dynamic-xml-serializer/{Guid.NewGuid()}-output.xml");
 
 Console.WriteLine("Hello, World!");
